@@ -28,6 +28,22 @@ const eventsData = [
 ];
 
 export default function DataTable() {
+  const [selectedEvent, setSelectedEvent] = useState(null);
+
+
+  const handleDelete = (eventId) => {
+    setData(data.filter((event) => event.id !== eventId));
+    setSelectedEvent(null); // Close modal after delete
+  };
+
+  const handleMarkAsCompleted = (eventId) => {
+    setData(
+      data.map((event) =>
+        event.id === eventId ? { ...event, status: "Completed" } : event
+      )
+    );
+    setSelectedEvent(null); // Close modal after marking as completed
+  };
   const [data, setData] = useState(eventsData); // Main data
   const [sortOrder, setSortOrder] = useState("asc"); // For sorting names
   const [currentPage, setCurrentPage] = useState(1); // Pagination control
@@ -172,6 +188,7 @@ export default function DataTable() {
             {currentRows.map((event, index) => (
               <tr
                 key={event.id}
+                onClick={() => setSelectedEvent(event)}
                 className={`hover:bg-gray-300 dark:hover:bg-gray-700 cursor-pointer ${
                   index % 2 === 0
                     ? "bg-gray-100 dark:bg-gray-900"
@@ -255,6 +272,56 @@ export default function DataTable() {
     </div>
   ))}
 </div>
+ 
+ 
+
+
+{selectedEvent && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{selectedEvent.name}</h3>
+        <button onClick={() => setSelectedEvent(null)} className="text-xl text-gray-800 dark:text-gray-200">×</button>
+      </div>
+      <p className="text-gray-600 dark:text-gray-400 mb-2">{selectedEvent.date}</p>
+      <p className="text-gray-600 dark:text-gray-400 mb-4">{selectedEvent.description}</p>
+      <div className="flex items-center mb-4">
+        <img src="/path/to/avatar1.png" alt="Avatar 1" className="w-8 h-8 rounded-full mr-2" />
+        <img src="/path/to/avatar2.png" alt="Avatar 2" className="w-8 h-8 rounded-full mr-2" />
+        <img src="/path/to/avatar3.png" alt="Avatar 3" className="w-8 h-8 rounded-full" />
+        <div className="ml-4 text-sm text-gray-600 dark:text-gray-400">{selectedEvent.guestSpeakers} Guest Speakers</div>
+      </div>
+      <div className="text-gray-600 dark:text-gray-400 text-sm mb-4">{selectedEvent.attendees} Attendees</div>
+      <div className="flex justify-end space-x-2">
+        <button
+          onClick={() => setSelectedEvent(null)}
+          className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-md"
+        >
+          Close
+        </button>
+        <button
+          onClick={() => handleDelete(selectedEvent.id)}
+          className="px-4 py-2 bg-red-500 text-white rounded-md"
+        >
+          Delete
+        </button>
+        <button
+          onClick={() => handleMarkAsCompleted(selectedEvent.id)}
+          className="px-4 py-2 bg-purple-500 text-white rounded-md"
+        >
+          Mark as Completed
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
+
+
+
+
+
 
 
       {/* Pagination controls */}
